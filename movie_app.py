@@ -54,4 +54,63 @@ def convert_genres(genre_id):
 # convert_genres("[18, 80]")
 df['genre_names'] = df['genre_ids'].apply(convert_genres)
 
-print(f'{df}')
+# print(f'{df}')
+
+def show_genre():
+    print(f'\nHere are the list of IDs with their corresponding genre.\n')
+    for key, value in genre_dict.items():
+        print(f'{key}: {value}')
+
+show_genre()
+
+def get_genre():
+    user_genres = []
+    while True:
+        # gets input and removes spaces
+        genre_input = input("\nEnter the ID's you are interested in seperated by commas. [eg. 18, 80]\n").replace(" ", "")
+
+        # uses regular expressions to remove and letters in string
+        genre_input_no_letters = re.sub(r'[^0-9,]', '', genre_input)
+
+        # converts into list using
+        genre_list = genre_input_no_letters.split(',')
+
+        # removes duplicate numbers
+        genre_list_unique = list(set(genre_list))
+
+        # loops through list
+        for num in genre_list_unique:
+            # checks if the string is digits only
+            if num.isdigit():
+                # converts to int and stores into temp var
+                genre_id = int(num)
+                # checks if the id is in dictionary
+                if genre_id in genre_dict:
+                    # appends into new list
+                    user_genres.append(genre_id)
+                else:
+                    print(f'ID: {genre_id} does not exist.')
+            else:
+                print(f'Do not enter letters/special characters.')
+        # checks if list is empty
+        if not user_genres:
+            print("No valid genre received.")
+            # restarts the loop - readability
+            continue
+        else:
+            # print(user_genres)
+            return user_genres
+
+get_genre()
+
+def adult_content():
+    while True:
+        adult_input = input("\nDo you want to include adult content? (y/n)\n").strip().lower()
+        if adult_input == "y":
+            return True
+        elif adult_input == "n":
+            return False
+        else:
+            print("Please only input 'y' or 'n'.")
+        
+adult_content()

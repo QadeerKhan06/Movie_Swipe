@@ -1,2 +1,2 @@
 # Movie_Swipe
-A movie application inspired by tinder. Filter through adult content, genres, and language (eng, jap, fr).
+A movie-finding application inspired by dating apps. Filter through adult content, genres, and language (eng, jap, fr).

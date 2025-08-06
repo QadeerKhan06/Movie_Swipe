@@ -1,5 +1,6 @@
 # imports
 import pandas as pd
+import re
 
 # load dataset -- dataset from kaggle: "A Saga of Cinematic Data"
 df = pd.read_csv('my_movies.csv')
@@ -101,7 +102,6 @@ def get_genre():
             # print(user_genres)
             return user_genres
 
-get_genre()
 
 def adult_content():
     while True:
@@ -112,5 +112,47 @@ def adult_content():
             return False
         else:
             print("Please only input 'y' or 'n'.")
-        
-adult_content()
+
+
+# get filters and store them
+user_genres = get_genre()      
+include_adult = adult_content()
+
+
+def convert_genre_ids(genre_str):
+    # remove sq brackets and empty spaces
+    genre_str = genre_str.strip("[]").replace(" ", "")
+
+    # split by comma and turn into list
+    genre_list = genre_str.split(",")
+
+    # return each item thats a digit as an integer
+    return [int(i) for i in genre_list if i.isdigit()]
+
+
+df["genre_ids_int"] = df["genre_ids"].apply(convert_genre_ids)
+# print(f'{df}')
+
+def filter_movies(df, user_genres, include_adult):
+    
+    # make copy of df
+    filtered_df = df.copy()
+
+    # checks if include adult is false
+    if not include_adult:
+        filtered_df = filtered_df[filtered_df['adult'] == False]
+
+    # helper function
+    def match_user_genres(row_genres):
+        # checks every genre in row_genre
+        for genre in row_genres:
+            # if the genre is in user_genre return true
+            if genre in user_genres:
+                return True
+        return False
+
+    # apply helper function to entire dataset column "genre_ids_int"
+    filtered_df = filtered_df[filtered_df['genre_ids_int'].apply(match_user_genres)]
+
+    # returns filtered dataset
+    return filtered_df

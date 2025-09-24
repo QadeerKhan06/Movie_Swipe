@@ -7,6 +7,8 @@ df = pd.read_csv('my_movies.csv')
 
 # print(f'{df.head()}')
 
+print(df['original_language'].unique())
+
 # Create a genre to convert 'genre_ids' to the corresponding genre via TMDB genre id
 genre_dict = {
     28: "Action",
@@ -28,6 +30,52 @@ genre_dict = {
     53: "Thriller",
     10752: "War",
     37: "Western"
+}
+
+lang_dict = {
+    "en": "English",
+    "hi": "Hindi",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "es": "Spanish",
+    "zh": "Chinese",
+    "fr": "French",
+    "ru": "Russian",
+    "tr": "Turkish",
+    "sv": "Swedish",
+    "ar": "Arabic",
+    "de": "German",
+    "cn": "Chinese (non-standard, usually 'zh')",
+    "da": "Danish",
+    "bn": "Bengali",
+    "fa": "Persian (Farsi)",
+    "th": "Thai",
+    "pl": "Polish",
+    "te": "Telugu",
+    "sr": "Serbian",
+    "hu": "Hungarian",
+    "nl": "Dutch",
+    "sh": "Serbo-Croatian (deprecated)",
+    "et": "Estonian",
+    "uk": "Ukrainian",
+    "id": "Indonesian",
+    "cs": "Czech",
+    "no": "Norwegian",
+    "ro": "Romanian",
+    "ga": "Irish (Gaelic)",
+    "gl": "Galician",
+    "fi": "Finnish",
+    "el": "Greek",
+    "bs": "Bosnian",
+    "is": "Icelandic",
+    "la": "Latin",
+    "tn": "Tswana",
+    "nb": "Norwegian Bokmål",
+    "he": "Hebrew",
+    "km": "Khmer",
+    "eu": "Basque"
 }
 
 def convert_genres(genre_id):
@@ -113,10 +161,29 @@ def adult_content():
         else:
             print("Please only input 'y' or 'n'.")
 
+def get_language():
+    while True:
+        language_check = input("\nDo you want the movie to be in any specific language? (y/n)\n").strip().lower()
 
-# get filters and store them
-user_genres = get_genre()      
-include_adult = adult_content()
+        language_choice = ""
+
+        if language_check == "y":
+            while True:
+                language_choice = input("\nWhich language(s) would you like? (eng, fr, jap)\n").strip().lower()
+
+                # uses regular expressions to remove and letters in string
+                lang_input_no_num = re.sub(r'\d+', '', language_choice)
+
+                # converts into list using split
+                lang_list = lang_input_no_num.split(',')
+
+                # removes duplicate numbers
+                lang_list_unique = list(set(lang_list))
+
+        elif language_check == "n":
+            return language_choice == "no"
+        else:
+            print("Please only input 'y' or 'n'.")
 
 
 def convert_genre_ids(genre_str):
@@ -156,3 +223,16 @@ def filter_movies(df, user_genres, include_adult):
 
     # returns filtered dataset
     return filtered_df
+
+
+# get filters and store them
+user_genres = get_genre()      
+include_adult = adult_content()
+filtered_df = filter_movies(df, user_genres, include_adult)
+print(f"\nFound {len(filtered_df)} movies matching your filters.\n")
+
+for index, row in filtered_df.head(10).iterrows():  # head(10) = only first 10 movies
+    print(f"Title: {row['title']}")
+    print(f"Genres: {convert_genres(row['genre_ids'])}")
+    print(f"Release Date: {row['release_date']}")
+    print("-" * 40)

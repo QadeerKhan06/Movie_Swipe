@@ -7,7 +7,7 @@ df = pd.read_csv('my_movies.csv')
 
 # print(f'{df.head()}')
 
-print(df['original_language'].unique())
+# print(df['original_language'].unique())
 
 # Create a genre to convert 'genre_ids' to the corresponding genre via TMDB genre id
 genre_dict = {
@@ -180,10 +180,36 @@ def get_language():
                 # removes duplicate numbers
                 lang_list_unique = list(set(lang_list))
 
+                for str in lang_list_unique:
+                # checks if the string is digits only
+                    # checks if the id is in dictionary
+                    if str in genre_dict:
+                        # appends into new list
+                        user_genres.append(str)
+                    else:
+                        print(f'Language: {str} does not exist in our catalogue.')
+
         elif language_check == "n":
             return language_choice == "no"
         else:
             print("Please only input 'y' or 'n'.")
+
+def get_min_rating():
+    while True:
+        min_rating = input("What is the minimum rating you would like? (0-10), Or press ENTER to skip.")
+        
+        if min_rating == "":
+            pass
+        elif not min_rating.isdigit():
+            print("Please enter a digit only.")
+        elif min_rating > 10 or min_rating < 0:
+            print("Please enter a number within the given range. (0-10)")
+        else:
+            return min_rating
+
+
+
+
 
 
 def convert_genre_ids(genre_str):
@@ -200,7 +226,7 @@ def convert_genre_ids(genre_str):
 df["genre_ids_int"] = df["genre_ids"].apply(convert_genre_ids)
 # print(f'{df}')
 
-def filter_movies(df, user_genres, include_adult):
+def filter_movies(df, user_genres, include_adult, language, ):
     
     # make copy of df
     filtered_df = df.copy()

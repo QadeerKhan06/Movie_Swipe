@@ -162,54 +162,99 @@ def adult_content():
             print("Please only input 'y' or 'n'.")
 
 def get_language():
+    user_lang = []
     while True:
         language_check = input("\nDo you want the movie to be in any specific language? (y/n)\n").strip().lower()
 
         language_choice = ""
 
         if language_check == "y":
-            while True:
-                language_choice = input("\nWhich language(s) would you like? (eng, fr, jap)\n").strip().lower()
 
-                # uses regular expressions to remove and letters in string
-                lang_input_no_num = re.sub(r'\d+', '', language_choice)
+            language_choice = input("\nWhich language(s) would you like? (eng, fr, jap)\n").strip().lower()
 
-                # converts into list using split
-                lang_list = lang_input_no_num.split(',')
+            # uses regular expressions to remove and letters in string
+            lang_input_no_num = re.sub(r'\d+', '', language_choice)
 
-                # removes duplicate numbers
-                lang_list_unique = list(set(lang_list))
+            # converts into list using split
+            lang_list = lang_input_no_num.split(',')
 
-                for str in lang_list_unique:
-                # checks if the string is digits only
-                    # checks if the id is in dictionary
-                    if str in genre_dict:
-                        # appends into new list
-                        user_genres.append(str)
-                    else:
-                        print(f'Language: {str} does not exist in our catalogue.')
+            # removes duplicate numbers
+            lang_list_unique = list(set(lang_list))
+
+            for str in lang_list_unique:
+            # checks if the string is digits only
+                # checks if the id is in dictionary
+                if str in lang_dict:
+                    # appends into new list
+                    user_lang.append(str)
+                else:
+                    print(f'Language: {str} does not exist in our catalogue.')
+        
+            return user_lang
 
         elif language_check == "n":
-            return language_choice == "no"
+            return []
         else:
             print("Please only input 'y' or 'n'.")
 
 def get_min_rating():
     while True:
-        min_rating = input("What is the minimum rating you would like? (0-10), Or press ENTER to skip.")
-        
+        min_rating = input("What is the minimum rating you would like? (0-10), Or press ENTER to skip.").strip()
+        # if input is empty returns none because user doesnt desire a minimum rating
         if min_rating == "":
-            pass
-        elif not min_rating.isdigit():
-            print("Please enter a digit only.")
-        elif min_rating > 10 or min_rating < 0:
-            print("Please enter a number within the given range. (0-10)")
+            return None
+        try:
+            # converts input into a float, not an integer because gives user more flexability
+            min_rating = float(min_rating)
+            # checks if input is within the given range
+            if min_rating > 10 or min_rating < 0:
+                print("Please enter a valid number. (0-10) Or optionally press ENTER if you do not desire a minimum rating requirement")
+                continue
+            else:
+                return min_rating
+        except ValueError:
+            print("Invalid input please enter a valid number. (0-10).")
+
+def get_year_range():
+    while True:
+        usr_year_range = input("Enter a range in years you would like to filter by. (e.g. 1990-2005) Or press ENTER to skip").strip()
+        # if input is empty return none, because user doesnt desire a certain range
+        if usr_year_range == "":
+            return None, None
+        # checks if hyphen is in input to determine whether it is a range between 2 years or one given year
+        if "-" in usr_year_range:
+            start_year, end_year = usr_year_range.split("-")
+            # makes both into integers if isdigit is true
+            if start_year.isdigit() and end_year.isdigit():
+                start_year = int(start_year)
+                end_year = int(end_year)
+            else:
+                print("Please only enter 2 valid years, seperated by a '-'.")
+                continue
+            # if range is given in reverse, swap them to make sure start year is the smaller year
+            if start_year > end_year:
+                start_year, end_year = end_year, start_year
+            # checks to see if start or end year are outside the acceptable range
+            if (start_year < 1900 or start_year > 2025) or (end_year < 1900 or end_year > 2025):
+                print("Please enter a range within a valid year range (1900-2025)")
+                continue
+            # returns start and end year
+            return start_year, end_year
+        
+        # checks to see if user didnt enter range, only a number, and makes sure its string only contains digits
+        elif usr_year_range.isdigit():
+            # makes var year an integer of user year range
+            year = int(usr_year_range)
+            # checks to see if year is outside acceptable year range
+            if year > 2025 or year < 1900:
+                print("Please enter a year within a valid year range (1900-2025)")
+                continue
+            # returns year
+            return year, year
+        # last case
         else:
-            return min_rating
-
-
-
-
+            print("Invalid input. Please try again.")
+            continue
 
 
 def convert_genre_ids(genre_str):
